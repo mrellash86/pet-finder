@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pet Finder - Find Your Perfect Companion</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header Section -->
+        <header class="header">
+            <h1>🐾 Pet Finder</h1>
+            <p>Find your perfect furry, feathered, or fluffy companion!</p>
+        </header>
+
+        <!-- Main Form Section -->
+        <main class="main-content">
+            <form id="petFinderForm" class="pet-form">
+                <div class="form-group">
+                    <label for="name">Your Name *</label>
+                    <input type="text" id="name" name="name" required placeholder="Enter your name">
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email Address *</label>
+                    <input type="email" id="email" name="email" required placeholder="Enter your email">
+                </div>
+
+                <div class="form-group">
+                    <label for="zipCode">Zip Code *</label>
+                    <input type="text" id="zipCode" name="zipCode" required placeholder="Enter your zip code" pattern="[0-9]{5}">
+                </div>
+
+                <div class="form-group">
+                    <label for="petType">Type of Pet *</label>
+                    <select id="petType" name="petType" required>
+                        <option value="">-- Select One --</option>
+                        <option value="cat">Cat</option>
+                        <option value="dog">Dog</option>
+                        <option value="bird">Bird</option>
+                        <option value="rabbit">Rabbit</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="submit-btn">Find Pets 🔍</button>
+            </form>
+        </main>
+
+        <!-- Results will be dynamically inserted here by JavaScript -->
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2025 Pet Finder App. Powered by Petfinder API.</p>
+    </footer>
+
+    <!-- Connect JavaScript -->
+    <script src="pet-finder-app.js"></script>
+</body>
+</html>
