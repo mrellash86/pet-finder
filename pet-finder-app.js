@@ -2,7 +2,7 @@
 const API_BASE_URL = 'https://api.petfinder.com/v2';
 const CLIENT_ID = 'UbRmykpb65QHfIfKvFLUeM1UWfKK2gagX9oA05NGODNQ0u049M';
 const CLIENT_SECRET = 'Gnptuq4hSGhIN5dAbMuYQzEy24z7aGon9DS2SkHw';
-let accessToken = null;
+
 
 // 2. UTILITY FUNCTIONS
 const getToken = () => fetch("https://api.petfinder.com/v2/oauth2/token", {
@@ -65,27 +65,37 @@ const getAdoptablePets = (petType, zipCode, name) => {
     });
 };
 
+
 // 5. DOM MANIPULATION AND DISPLAY
-function displayPets(petsData, userName) {
-    // Clear current results from previous 
+const getImageUrl = (pet) => {
+    if (!pet.photos || pet.photos.length === 0) {
+        return 'https://via.placeholder.com/300x200?text=No+Photo+Available';
+    }
+    
+    const photo = pet.photos[0];
+    return photo.medium || photo.small || photo.large || 'https://via.placeholder.com/300x200?text=No+Photo+Available';
+};
+
+const displayPets = (petsData, userName) => {
+    // Clear any existing results from previous searches
     const existingResults = document.getElementById('results');
     if (existingResults) {
         existingResults.remove();
     }
     
-    // results container section
+    // Create a results container section
     const resultsContainer = document.createElement('div');
     resultsContainer.id = 'results';
     resultsContainer.className = 'results-container';
     
-    // Handle case where no pets found + show message
+    // Handle case where no pets found
     if (!petsData || petsData.length === 0) {
         resultsContainer.innerHTML = `<h2>Sorry ${userName}, we couldn't find any pets matching your criteria.</h2>`;
         document.body.appendChild(resultsContainer);
         return;
     }
     
-    // Add header
+    // Add personalized header
     const greeting = document.createElement('h2');
     greeting.textContent = `Hi ${userName}, here are pets near you!`;
     greeting.className = 'greeting';
@@ -95,20 +105,26 @@ function displayPets(petsData, userName) {
     const petsGrid = document.createElement('div');
     petsGrid.className = 'pets-grid';
     
-    // For each pet in petsData array
+    // forEach loop  petsData 
     petsData.forEach(pet => {
-        // Extract pet information with fallbacks for missing data
         const petName = pet.name || 'Name unknown';
         const petBreed = (pet.breeds && pet.breeds.primary) || 'Breed unknown';
         const petColor = (pet.colors && pet.colors.primary) || 'Color unknown';
-        const petPhoto = (pet.photos && pet.photos.length > 0) 
-            ? pet.photos[0].medium || pet.photos[0].small || pet.photos[0].large
-            : 'https://via.placeholder.com/300x200?text=No+Photo+Available';
-        const petDescription = pet.description 
-            ? decodeHTML(pet.description).substring(0, 150) + '...'
-            : 'No description available.';
+        const petPhoto = getImageUrl(pet);
+            
+        const petDescription = (() => {
+            if (!pet.description || typeof pet.description !== 'string' || !pet.description.trim()) {
+                return 'No description available.';
+            }
+            try {
+                const decoded = decodeHTML(pet.description.trim());
+                return decoded.length > 150 ? decoded.substring(0, 150) + '...' : decoded;
+            } catch (error) {
+                console.warn('Error decoding description:', error);
+                return 'Description unavailable.';
+            }
+        })();
         
-        // Create pet card HTML structure
         const petCard = document.createElement('div');
         petCard.className = 'pet-card';
         
@@ -122,7 +138,6 @@ function displayPets(petsData, userName) {
             </div>
         `;
         
-        // Append pet card to pets grid
         petsGrid.appendChild(petCard);
     });
     
@@ -131,8 +146,7 @@ function displayPets(petsData, userName) {
     
     // Append results container to main page
     document.body.appendChild(resultsContainer);
-}
-
+};
 // 6. EVENT LISTENERS AND INITIALIZATION
 document.addEventListener('DOMContentLoaded', function() {
     // Get reference to the form element
